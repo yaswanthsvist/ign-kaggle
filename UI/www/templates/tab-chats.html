@@ -1,0 +1,66 @@
+<ion-view view-title="Chats">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.pie')">
+        <h2>Platforms Share Pie</h2>
+        <p>All platforms</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.bar')">
+        <h2>Platforms Comparissions</h2>
+        <p>All platforms</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.pieGen')">
+        <h2>Genres Share Pie</h2>
+        <p>All platforms</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.barGen')">
+        <h2>Genres Comparissions</h2>
+        <p>All platforms</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.heatmap')">
+        <h2>Begining of Platforms</h2>
+        <p>Begining of Platforms History</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.heatmap',{api:'end'})">
+        <h2>End Platforms</h2>
+        <p>End of Platforms History</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.releases',{type:'release_year'})">
+        <h2>Games/year</h2>
+        <p>Number of games released per year</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.releases',{type:'release_month'})">
+        <h2>Games/month</h2>
+        <p>Number of games released per month</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.releases',{type:'release_day'})">
+        <h2>Games/day</h2>
+        <p>Number of games released per day</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+      <ion-item class="item-remove-animate item-icon-right" type="item-text-wrap" 
+          ng-click="goto('tab.releases',{type:'release_date'})">
+        <h2>Games/date</h2>
+        <p>Number of games released on dates</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
