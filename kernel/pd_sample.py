@@ -12,10 +12,11 @@ CORS(app)
 def after_request(response):
   response.headers.add('Access-Control-Allow-Origin', '*')
   response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   return response
 
 retail=pd.read_csv("ign.csv")
+retail=retail[retail["platform"]!="NaN"]
 #def getdate(x):
 #	return datetime.strptime("%s/%s/%s"%(x["release_year"],x["release_month"],x["release_day"]),"%Y/%m/%d");
 release_date=retail.apply(lambda x:datetime.strptime("%s/%s/%s"%(x["release_year"],x["release_month"],x["release_day"]),"%Y/%m/%d"),axis=1)
@@ -39,6 +40,16 @@ boolBgnPlatforms=platforms.duplicated()
 boolEndPlatforms=platforms.duplicated("last")
 beginPlatforms=retailSorted[~boolBgnPlatforms]
 endPlatforms=retailSorted[~boolEndPlatforms]
+
+beginEndPlat=beginPlatforms["platform"].tolist()
+[beginEndPlat.append(x) for x in endPlatforms["platform"].tolist()]
+
+beginEndZ=[0.5 for x in beginPlatforms["platform"]]
+[beginEndZ.append(1) for x in endPlatforms["platform"]]
+
+beginEndYear=beginPlatforms["release_year"].tolist()
+[beginEndYear.append(x) for x in endPlatforms["release_year"].tolist()]
+
 final["begin"]={
 	"platforms":{
 		"platforms":beginPlatforms["platform"].tolist(),
@@ -51,35 +62,42 @@ final["end"]={
 		"year":endPlatforms["release_year"].tolist()
 	}
 }
+final["beginEnd"]={
+	"platforms":{
+		"platforms":beginEndPlat,
+		"year":beginEndYear,
+		"z":beginEndZ
+	}
+}
 #print np.array(beginPlatforms.filter(["release_year","platform"]))
 #print json.dumps(final["begin"])
 def totalBinA(col_a,col_b,b_unique):
 	out={}
 	for b in b_unique:
 		if(~pd.isnull(b)):
-			out[b]=col_a[col_b==b].size
+			if(col_a[col_b==b].size!=0):
+				out[b]=col_a[col_b==b].size
 	return out
 
 #print data[platforms=="iPad"]
 for plat in uplatforms:
 	platform=data[platforms==plat]
-	#print "Games in ",plat," :",platform.size ," avg rview:",platform.mean()
 	final["platforms"][plat]={
 		"name":plat,
 		"games":platform.size,
-		"Avg Review":platform.mean(),
+		"avgReview":platform.mean(),
 		"gener":totalBinA(platform,geners,ugeners)
 	}
 for gen in ugeners:
 	gener=data[geners==gen]
-	#print "Games in ",plat," :",platform.size ," avg rview:",platform.mean()
 	final["genre"][gen]={
 		"name":gen,
 		"games":gener.size,
-		"Avg Review":gener.mean(),
+		"avgReview":gener.mean(),
 		"platform":totalBinA(gener,platforms,uplatforms)
 	}
 #print dumps(final)
+
 
 def getMean(data,intervel):
 	mean=[]
@@ -91,22 +109,15 @@ def getMean(data,intervel):
 #liste=pd.Series(getMean(data[100:200],10))
 #print liste
 #print data.size
-
-
-@app.route('/platforms', methods = ['POST',"OPTIONS"])
+@app.route('/platforms', methods = ["OPTIONS"])
+def platforms_o():
+    return json.dumps({})
+@app.route('/platforms', methods = ['POST'])
 def platforms():
-    # Get the parsed contents of the form data
-    json = request.json
-    print(json)
-    # Render template
-    return jsonify(final["platforms"])
+    return json.dumps(final["platforms"])
 
 @app.route('/genres', methods = ['POST',"OPTIONS"])
 def genres():
-    # Get the parsed contents of the form data
-    json = request.json
-    print(json)
-    # Render template
     return jsonify(final["genre"])
 
 @app.route('/begin', methods = ['POST',"OPTIONS"])
@@ -115,8 +126,11 @@ def begin():
 @app.route('/end', methods = ['POST',"OPTIONS"])
 def end():
     return json.dumps(final["end"])
+@app.route('/beginEnd', methods = ['POST',"OPTIONS"])
+def beginEnd():
+    return json.dumps(final["beginEnd"])
 @app.route('/releases', methods = ["OPTIONS"])
-def releaseso():
+def releases_o():
 	return json.dumps({})
 @app.route('/releases', methods = ['POST'])
 def releases():
@@ -128,7 +142,6 @@ def releases():
 	x=np.array([index for index,val in retailSorted.groupby(typ).size().iteritems()]).tolist()
 	y=np.array([val for index,val in retailSorted.groupby(typ).size().iteritems()]).tolist()
 	return json.dumps({"x":x,"y":y})
-
 # Run
 if __name__ == '__main__':
     app.run(

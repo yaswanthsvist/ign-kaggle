@@ -7,25 +7,25 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform,$rootScope,$http) {
+.run(function($ionicPlatform,$rootScope,$http,$ionicLoading,Platforms) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
 //    $rootScope.ip="http://192.168.1.113:8099"
-    $rootScope.ip="http://192.168.0.52:8099"
+//    $rootScope.ip="http://192.168.0.8:8099"
+      $rootScope.ip="http://192.168.0.52:8099"
       $http({
-    method: 'POST',
-    data:{},
-    url: $rootScope.ip+'/platforms'
-  }).then(
-    function successCallback(response) {
-      console.dir(response);
-      $rootScope.platforms=response["data"];
-    },
-     function errorCallback(response) {
-    }
-  );
-
+        method: 'POST',
+        data:{},
+        url: $rootScope.ip+'/platforms'
+      }).then(
+        function successCallback(response) {
+          $rootScope.platforms=response["data"];
+          Platforms.set(response["data"]);
+        },
+        function errorCallback(response) {
+      });
+      
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
@@ -70,6 +70,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       'tab-chats': {
         templateUrl: 'templates/pie.html',
         controller: 'pieCtrl'
+      }
+    }
+  })
+  .state('tab.platform', {
+    url: '/platform',
+    params:{
+      platform:null
+    },
+    views: {
+      'tab-chats': {
+        templateUrl: 'templates/platform.html',
+        controller: 'platformCtrl'
       }
     }
   })

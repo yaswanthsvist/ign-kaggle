@@ -1,0 +1,10 @@
+<ion-view view-title="{{platform.name}} Insigts">
+  <ion-content class="padding">
+ 	    <b style='color:orange'>{{platform.name}}</b> platform has got <b style='color:green'>{{platform.games}}</b> games.<br>
+ 	    The Average Review of Platform is 
+ 	    <b style='color:gold'>
+ 	    	{{ toInt(platform.avgReview) }}
+ 	    </b> 
+	<div id="chartPlat"></div>
+  </ion-content>
+</ion-view>
