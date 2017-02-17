@@ -16,12 +16,16 @@ def after_request(response):
   return response
 
 retail=pd.read_csv("ign.csv")
-retail=retail[retail["platform"]!="NaN"]
+retail=retail[~retail["genre"].isnull()]
+#retailSer=np.isnan(np.array(retail["genre"][1]))
+
+#platform=retail["genre"].unique()
+#print retailSer
 #def getdate(x):
 #	return datetime.strptime("%s/%s/%s"%(x["release_year"],x["release_month"],x["release_day"]),"%Y/%m/%d");
 release_date=retail.apply(lambda x:datetime.strptime("%s/%s/%s"%(x["release_year"],x["release_month"],x["release_day"]),"%Y/%m/%d"),axis=1)
 #release_date=retail.apply(getdate,axis=1)
-tz = pytz.timezone('America/Los_Angeles')
+#tz = pytz.timezone('America/Los_Angeles')
 retail["release_date"]=["%d-%d-%d"%(d.year,d.month,d.day) for d in release_date]
 retailSorted=retail.sort_values(["release_date"],ascending=True)
 platforms=retailSorted["platform"]

@@ -81,31 +81,7 @@ angular.module('starter.controllers', [])
 })
 .controller('pieGenCtrl', function($scope,$http,$rootScope) {
   console.log("pieGenCtrl");
-  /*  var chart = c3.generate({
-      bindto: '#chartpieGen',
-      size:{
-        height:540
-      },
-      data: {
-          columns: [
-              ['data1', 30],
-              ['data2', 120]
-          ],
-          type : 'pie',
-          onclick: function (d, i) { console.log("onclick", d, i); },
-          onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-          onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-      },
-      pie: {
-          label: {
-              format: function (value, ratio, id) {
-                  return d3.format('')(value);
-              }
-          }
-      }
 
-    });
-*/
     $http({
           method: 'POST',
           data:{},
@@ -113,24 +89,40 @@ angular.module('starter.controllers', [])
         }).then(
           function successCallback(response) {
 //            console.dir(response);
-            //   $rootScope.platforms=response["data"];
-            //   $scope.platforms=response["data"];
-            //   var data=[];
-            //   var platforms=Object.keys($scope.platforms);
-            //   for(var i=0;i<platforms.length;i++){
-            //     if(platforms[i]=="NaN")
-            //       continue;
-            //     var col=[];
-            //     col.push(platforms[i]);
-            //     col.push($scope.platforms[platforms[i]].games);
+              // $rootScope.platforms=response["data"];
+              $scope.platforms=response["data"];
+              var data=[];
+              var platforms=Object.keys($scope.platforms);
+              for(var i=0;i<platforms.length;i++){
+                if(platforms[i]=="NaN"||$scope.platforms[platforms[i]].games<500)
+                  continue;
+                var col=[];
+                col.push(platforms[i]);
+                col.push($scope.platforms[platforms[i]].games);
+                data.push(col);
+            }
+            console.dir(data);
+            var chart = c3.generate({
+              bindto: '#chartpieGen',
+              size:{
+                height:540
+              },
+              data: {
+                  columns:data,
+                  type : 'pie',
+                  onclick: function (d, i) { console.log("onclick", d, i); },
+                  onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+                  onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+              },
+              pie: {
+                  label: {
+                      format: function (value, ratio, id) {
+                          return d3.format('')(value);
+                      }
+                  }
+              }
 
-            //     data.push(col);
-            // }
-            // console.dir(data);
-
-            // chart.unload({ids:"data1"});
-            // chart.unload({ids:"data2"});
-            // chart.load({columns:data});
+            });
           },
            function errorCallback(response) {
           }
@@ -138,40 +130,52 @@ angular.module('starter.controllers', [])
 
 })
 .controller('barGenCtrl', function($scope,$http,$rootScope) {
-  console.log("barGenCtrl");
-    var data=[];
-      var col=['x'];
-      var games=["games"];
-    var platforms=Object.keys($rootScope.platforms);
-    for(var i=0;i<platforms.length;i++){
-      col.push(platforms[i]);
-      games.push($rootScope.platforms[platforms[i]].games);
-    }
-      data.push(col);
-      data.push(games);
-    console.dir(data);
+    $http({
+          method: 'POST',
+          data:{},
+          url: $rootScope.ip+'/genres'
+        }).then(
+          function successCallback(response) {
+            $scope.platforms=response["data"];
+            var data=[];
+            var col=['x'];
+            var games=["games"];
+            var platforms=Object.keys($scope.platforms);
+            for(var i=0;i<platforms.length;i++){
+              if(platforms[i]=="NaN"||$scope.platforms[platforms[i]].games<500)
+                continue;
+              col.push(platforms[i]);
+              games.push($scope.platforms[platforms[i]].games);
+            }
+              data.push(col);
+              data.push(games);
+            console.dir(data);
+            var chart = c3.generate({
+              bindto: '#chartGen',
+              size:{
+                height:440
+              },
+              data: {
+                x : 'x',
+                columns:data,
+                type: 'bar'
+              },
+              axis: {
+                  x: {
+                      type: 'category', // this needed to load string x value
+                      tick: {
+                        fit: true
+                      }
+                  }
 
-    var chart = c3.generate({
-      bindto: '#chartGen',
-      size:{
-        height:440
-      },
-      data: {
-        x : 'x',
-        columns:data,
-        type: 'bar'
-      },
-      axis: {
-          x: {
-              type: 'category', // this needed to load string x value
-              tick: {
-                fit: true
               }
+
+            });
+          },
+           function errorCallback(response) {
           }
-
-      }
-
-    });
+        );
+  
 
 })
 .controller('heatmapCtrl', function($scope,$http,$rootScope,$stateParams) {
