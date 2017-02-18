@@ -82,7 +82,9 @@ def totalBinA(col_a,col_b,b_unique):
 			if(col_a[col_b==b].size!=0):
 				out[b]=col_a[col_b==b].size
 	return out
-
+def getColPerGamesWithLimit(col="platform",increasing=False,limit=10):
+	data= pd.DataFrame(data=[[un,retail[retail[col]==un][col].size] for un in retail[col].unique()],columns=[col,"games"]).sort_values(["games"],ascending=increasing)[:limit]
+	return {"x":data["games"].tolist(),"y":data[col].tolist()}
 #print data[platforms=="iPad"]
 for plat in uplatforms:
 	platform=data[platforms==plat]
@@ -136,6 +138,7 @@ def beginEnd():
 @app.route('/releases', methods = ["OPTIONS"])
 def releases_o():
 	return json.dumps({})
+
 @app.route('/releases', methods = ['POST'])
 def releases():
 	#uyears=retailSorted["release_year"]
@@ -146,6 +149,41 @@ def releases():
 	x=np.array([index for index,val in retailSorted.groupby(typ).size().iteritems()]).tolist()
 	y=np.array([val for index,val in retailSorted.groupby(typ).size().iteritems()]).tolist()
 	return json.dumps({"x":x,"y":y})
+@app.route('/v1/services/<api>', methods = ['POST'])
+def service(api):
+	func=globals()[api]
+	data = {}
+	try:
+		data = request.get_json(force=True)
+		if not data.has_key("auth_token") :
+			data =  data["data"] if data.has_key("data") else {}                     
+		print(str(data))
+	except Exception as e:
+		print(e)
+	for key, value in request.args.iteritems():                
+		try:
+			if int(value) == float(value):
+				data[key]=int(value)                
+			else:
+				data[key]=float(value)            
+		except:
+			try:
+				data[key]=float(value)                
+			except:
+				data[key]=value
+	try:
+		print data
+		result = func(**data)
+		if result is None:
+			result = "Success"
+		print("Data To Return :" + str(result))
+		print 'func-' + str(func.__name__)
+		resStr = { "data" : result }
+		return jsonify(resStr)
+	except:
+		return jsonify({})
+
+
 # Run
 if __name__ == '__main__':
     app.run(
